@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
 import logging
-
 import shortuuid
-
 from patientInfo import PatientInfo
+from connectMongoDB import ConnectMongoDB
 
 """
 class ReadPatientsList
@@ -29,7 +28,8 @@ generate_paitent_id -->
     call from --> get_patients_list method
 """
 
-# ! Generate New ID for each patient with 10 numeric number 
+
+# ! Generate New ID for each patient with 10 numeric number
 def generate_paitent_id():
     return int(shortuuid.ShortUUID(alphabet="0123456789").random(length=10))
 
@@ -41,6 +41,7 @@ class ReadPatientsList:
     * to empty string
     * create object from class PatientInfo named patient_info as None
     * define patient that we will have for each patient as None
+    * create object from class ConnectMongoDB named connection
     """
 
     def __init__(self, patients_list_file):
@@ -50,14 +51,17 @@ class ReadPatientsList:
                                                           skiprows=1).replace(np.nan, '', regex=True)
         self.patient = None
         self.patient_info = None
+        self.connection = ConnectMongoDB()
 
     """
     * read rows in dr afroza patient list excel sheet 
     * initialize the object of class PatientInfo
-    * define patient information by extracting the patient data from excel sheet columns using object created     
+    * define patient information by extracting the patient data from excel sheet columns using object patient_info     
+    * connect to patient collection in monogdb using the object connection      
     """
 
     def get_patients_list(self):
+        self.connection.connect_to_patient_collection()
         try:
             for count, row in self.patients_list_file_dataframe.iterrows():
                 patient_data = self.patients_list_file_dataframe.loc[count]
@@ -94,7 +98,7 @@ class ReadPatientsList:
                     "secondary_insurance": self.patient_info.get_patient_secondary_insurance_array(),
                     "tertiary_insurance": self.patient_info.get_patient_tertiary_insurance_array(),
                 }
-                print(self.patient,"\n\n\n\nx`")
+                self.connection.insert_to_patients_collection(self.patient)
         except ValueError:
             print("get_patients_list Method:", ValueError)
             logging.error("get_patients_list:         Error While Reading Data")
