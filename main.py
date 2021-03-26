@@ -9,10 +9,10 @@ logging.basicConfig(filename="PatientsList.log", filemode="w", format=logging_fo
 EXCEL_FILE_NAME_DR_AFROZA_PATIENTS_LIST = "Dr.Afroza_PatientList_03162021.xls"
 
 """
-* Main Method
 
-* create object from class ReadPatientsList named read_patients_list
-
+Main Method
+create object from class ReadPatientsList named read_patients_list
+call method get_patients_list
 
 @:exception File Maybe not exist
 """

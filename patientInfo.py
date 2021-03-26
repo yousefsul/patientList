@@ -1,7 +1,26 @@
 import math
 
+"""
+class ReadPatientsList
+
+Methods:
+
+constructor -->
+    param patient_info
+
+    call from --> get_patients_list method in ReadPatientsList class
+------------------------------------------------
+getters for each paitent data 
+------------------------------------------------
+Functions
+"""
+
 
 class PatientInfo:
+    """
+    get the full name of the paitent and subscriber and manipulate it
+    """
+
     def __init__(self, patient_info):
         self.patient_info = patient_info
         self.patient_full_name = self.patient_info.get("Patient Name (Last, First MI)").split(",")
@@ -90,6 +109,7 @@ class PatientInfo:
     def get_patient_primary_insurance_insurance_id(self):
         return int(9001654108)
 
+    # return primary insurance as array
     def get_patient_primary_insurance_array(self):
         self.patient_primary_insurance = []
         primary_insurance = {
@@ -157,6 +177,7 @@ class PatientInfo:
                 "phone_number": self.get_home_plan_phone_number()
             }
 
+    # extract the home plan address coulmn
     def get_patient_home_plan_address(self):
         global home_plan_street_address, home_plan_city, home_plan_state, home_plan_zip
         if self.patient_info.get("Home Plan Address") != "":
@@ -202,7 +223,7 @@ class PatientInfo:
                 "address": self.get_patient_plan_admin_address(),
                 "phone_number": self.get_patient_plan_admin_phone_number()
             }
-
+    # extract the plan admin address
     def get_patient_plan_admin_address(self):
         global plan_admin_street_address, plan_admin_plan_city, plan_admin_state, plan_admin_zip
         if self.patient_info.get("Plan Admin Address") != "":

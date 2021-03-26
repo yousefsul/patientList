@@ -11,37 +11,39 @@ class ReadPatientsList
 Methods:
 
 constructor -->
-    @:param: self,patients_list_file
+    param patients_list_file
 
     call from --> Main Method
 ------------------------------------------------
 get_patients_list -->
-    @:param self
+    param no params
 
     call from --> Main Method
 ------------------------------------------------
 Functions
 
 generate_paitent_id -->
-    @:param: no params
+    param no params
 
     call from --> get_patients_list method
+    
+    return int 10 length 
 """
 
 
-# ! Generate New ID for each patient with 10 numeric number
+# Generate New ID for each patient with 10 numeric number
 def generate_paitent_id():
     return int(shortuuid.ShortUUID(alphabet="0123456789").random(length=10))
 
 
 class ReadPatientsList:
     """
-    * define the patient list file
-    * define the dataframe for the patient list file skip the first row beacuse have non valuable replace the Nan Number
-    * to empty string
-    * create object from class PatientInfo named patient_info as None
-    * define patient that we will have for each patient as None
-    * create object from class ConnectMongoDB named connection
+    define the patient list file
+    define the dataframe for the patient list file skip the first row beacuse have non valuable replace the Nan Number
+    to empty string
+    create object from class PatientInfo named patient_info as None
+    define patient that we will have for each patient as None
+    create object from class ConnectMongoDB named connection
     """
 
     def __init__(self, patients_list_file):
@@ -54,12 +56,11 @@ class ReadPatientsList:
         self.connection = ConnectMongoDB()
 
     """
-    * read rows in dr afroza patient list excel sheet 
-    * initialize the object of class PatientInfo
-    * define patient information by extracting the patient data from excel sheet columns using object patient_info     
-    * connect to patient collection in monogdb using the object connection      
+    read rows in dr afroza patient list excel sheet 
+    initialize the object of class PatientInfo
+    define patient information by extracting the patient data from excel sheet columns using object patient_info     
+    connect to patient collection in monogdb using the object connection      
     """
-
     def get_patients_list(self):
         self.connection.connect_to_patient_collection()
         try:

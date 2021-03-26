@@ -9,17 +9,17 @@ class ConnectMongoDB
 Methods:
 
 constructor  --> 
-    @:param self
+    param no params
     
     call from --> get_patients_list method in ReadPatientsList class
 ---------------------------------------------------------------------------------
 connect_to_patient_list_collection
-    @:param self
+    param no params
     
     call from --> get_patients_list method in ReadPatientsList class
 ----------------------------------------------------------------------------------
 insert_to_patients_collection
-    @:param self,result 
+    param result 
     
     call from --> get_patients_list method in ReadPatientsList class
 ----------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ class ConnectMongoDB:
             print("ConnectMongoDB Constructor:", ConnectionError)
 
     """
-    create connection to paitnets collection in dr afroza ahmed db 
+    create connection to paitnets collection 
     """
     def connect_to_patient_collection(self):
         self.paitnets_collection = self.client_db.patientsColl
