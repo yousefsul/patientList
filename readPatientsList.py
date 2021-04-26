@@ -1,3 +1,5 @@
+import datetime
+
 import numpy as np
 import pandas as pd
 import logging
@@ -48,11 +50,17 @@ class ReadPatientsList:
 
     def __init__(self, patients_list_file):
         self.patients_list_file = patients_list_file
+        # self.patients_list_file_dataframe = pd.read_excel(self.patients_list_file,
+        #                                                   sheet_name="Updates_New_Patients",
+        #                                                   skiprows=1).replace(np.nan, '', regex=True)
+
         self.patients_list_file_dataframe = pd.read_excel(self.patients_list_file,
                                                           sheet_name="PatientsList_03162021",
                                                           skiprows=1).replace(np.nan, '', regex=True)
         self.patient = None
         self.patient_info = None
+        self.date = datetime.datetime.now().date().strftime("%Y%m%d")
+        self.time = datetime.datetime.now().time().strftime("%H:%M:%S")
         self.connection = ConnectMongoDB()
 
     """
@@ -61,6 +69,7 @@ class ReadPatientsList:
     define patient information by extracting the patient data from excel sheet columns using object patient_info     
     connect to patient collection in monogdb using the object connection      
     """
+
     def get_patients_list(self):
         self.connection.connect_to_patient_collection()
         try:
@@ -68,6 +77,21 @@ class ReadPatientsList:
                 patient_data = self.patients_list_file_dataframe.loc[count]
                 self.patient_info = PatientInfo(patient_data)
                 self.patient = {
+                    "header_section": {
+                        "document_id": generate_paitent_id(),
+                        "date_created": {
+                            "date": self.date,
+                            "time": self.time
+                        },
+                        "current_status": {
+                            "status": self.patient_info.get_patient_status(),
+                            "date": {
+                                "date": self.date,
+                                "time": self.time
+                            },
+                        },
+                        "status_history": [self.patient_info.get_current_status()],
+                    },
                     "patient_info": {
                         "office_ally_id": self.patient_info.get_patient_office_ally_id(),
                         "patient_id": generate_paitent_id(),
@@ -99,7 +123,8 @@ class ReadPatientsList:
                     "secondary_insurance": self.patient_info.get_patient_secondary_insurance_array(),
                     "tertiary_insurance": self.patient_info.get_patient_tertiary_insurance_array(),
                 }
-                self.connection.insert_to_patients_collection(self.patient)
+                print(self.patient)
+                # self.connection.insert_to_patients_collection(self.patient)
         except ValueError:
             print("get_patients_list Method:", ValueError)
             logging.error("get_patients_list:         Error While Reading Data")

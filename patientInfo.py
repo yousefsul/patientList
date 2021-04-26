@@ -1,4 +1,6 @@
+import datetime
 import math
+import pandas as pd
 
 """
 class ReadPatientsList
@@ -25,7 +27,10 @@ class PatientInfo:
         self.patient_info = patient_info
         self.patient_full_name = self.patient_info.get("Patient Name (Last, First MI)").split(",")
         self.patient_middle_first_name = self.patient_full_name[1].split(" ")
-        self.patient_date_of_birth = self.patient_info.get("DOB").split("/")
+        # self.patient_date_of_birth = str(self.patient_info.get("DOB")).split("/")
+        # print(self.patient_info.get('DOB'),"    ",type(self.patient_info.get('DOB')))
+        self.patient_date_of_birth = pd.to_datetime(str(self.patient_info.get('DOB')))
+        self.patient_date_of_birth = self.patient_date_of_birth.strftime('%Y%m%d')
         self.primary_insurance_subscriber_full_name = self.patient_info.get("Subscriber Name").split(",")
         if self.patient_info.get("Secondary Subscriber Name") == "":
             self.subscriber_first_secondary_insurance = ""
@@ -49,7 +54,8 @@ class PatientInfo:
         return self.patient_middle_first_name[2].strip()
 
     def get_patient_date_of_birth(self):
-        return self.patient_date_of_birth[2] + self.patient_date_of_birth[0] + self.patient_date_of_birth[1]
+        return self.patient_date_of_birth
+    #     return self.patient_date_of_birth[2] + self.patient_date_of_birth[0] + self.patient_date_of_birth[1]
 
     def get_patient_gender(self):
         return self.patient_info.get("Gender")
@@ -174,7 +180,7 @@ class PatientInfo:
                 "home_plan_payer_id": self.get_home_plan_payer_id(),
                 "home_plan_name": self.get_home_plan_insurance_name(),
                 "address": self.get_patient_home_plan_address(),
-                "phone_number": self.get_home_plan_phone_number()
+                # "phone_number": self.get_home_plan_phone_number()
             }
 
     # extract the home plan address coulmn
@@ -210,8 +216,8 @@ class PatientInfo:
     def get_home_plan_payer_id(self):
         return str(self.patient_info.get("Home Plan Payer ID"))
 
-    def get_home_plan_phone_number(self):
-        return int(math.trunc(self.patient_info.get("Home Plan Phone Number")))
+    # def get_home_plan_phone_number(self):
+    #     return int(math.trunc(self.patient_info.get("Home Plan Phone Number")))
 
     def get_patient_plan_admin_info(self):
         if self.patient_info.get("Plan Admin Name") == "":
@@ -258,3 +264,13 @@ class PatientInfo:
 
     def get_patient_plan_admin_phone_number(self):
         return int(math.trunc(self.patient_info.get("Plan Admin Phone Number")))
+
+    def get_current_status(self):
+        current_status = {
+            "status": self.get_patient_status(),
+            "date": {
+                "date": datetime.datetime.now().date().strftime("%Y%m%d"),
+                "time": datetime.datetime.now().time().strftime("%H:%M:%S")
+            }
+        }
+        return current_status
