@@ -1,4 +1,5 @@
 import datetime
+import json
 
 import numpy as np
 import pandas as pd
@@ -50,15 +51,13 @@ class ReadPatientsList:
 
     def __init__(self, patients_list_file):
         self.patients_list_file = patients_list_file
-        # self.patients_list_file_dataframe = pd.read_excel(self.patients_list_file,
-        #                                                   sheet_name="Updates_New_Patients",
-        #                                                   skiprows=1).replace(np.nan, '', regex=True)
-
-        self.patients_list_file_dataframe = pd.read_excel(self.patients_list_file,
-                                                          sheet_name="PatientsList_03162021",
+        self.patients_list_file_dataframe = pd.read_excel(self.patients_list_file,sheet_name='New.Patient__Katrina'
+                                                                                             '.Sepulveda',
                                                           skiprows=1).replace(np.nan, '', regex=True)
+
         self.patient = None
         self.patient_info = None
+        self.dx_code = []
         self.date = datetime.datetime.now().date().strftime("%Y%m%d")
         self.time = datetime.datetime.now().time().strftime("%H:%M:%S")
         self.connection = ConnectMongoDB()
@@ -93,8 +92,8 @@ class ReadPatientsList:
                         "status_history": [self.patient_info.get_current_status()],
                     },
                     "patient_info": {
-                        "office_ally_id": self.patient_info.get_patient_office_ally_id(),
                         "patient_id": generate_paitent_id(),
+                        "office_ally_id": self.patient_info.get_patient_office_ally_id(),
                         "patient_name": {
                             "last": self.patient_info.get_patient_last_name(),
                             "first": self.patient_info.get_patient_first_name(),
@@ -114,7 +113,6 @@ class ReadPatientsList:
                             "email": self.patient_info.get_patient_email(),
                         },
                         "account_type": self.patient_info.get_patient_account_type(),
-                        "status": self.patient_info.get_patient_status(),
                         "dx_codes": self.patient_info.get_patient_dx_codes()
                     },
                     "primary_insurance": self.patient_info.get_patient_primary_insurance_array(),
@@ -123,8 +121,11 @@ class ReadPatientsList:
                     "secondary_insurance": self.patient_info.get_patient_secondary_insurance_array(),
                     "tertiary_insurance": self.patient_info.get_patient_tertiary_insurance_array(),
                 }
-                print(self.patient)
-                # self.connection.insert_to_patients_collection(self.patient)
+                print(json.dumps(
+                    self.patient , indent=4
+                ))
+                # self.dx_code.append(self.patient_info.get_patient_dx_codes())
+                self.connection.insert_to_patients_collection(self.patient)
         except ValueError:
             print("get_patients_list Method:", ValueError)
             logging.error("get_patients_list:         Error While Reading Data")

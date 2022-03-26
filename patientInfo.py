@@ -55,6 +55,7 @@ class PatientInfo:
 
     def get_patient_date_of_birth(self):
         return self.patient_date_of_birth
+
     #     return self.patient_date_of_birth[2] + self.patient_date_of_birth[0] + self.patient_date_of_birth[1]
 
     def get_patient_gender(self):
@@ -74,17 +75,26 @@ class PatientInfo:
 
     def get_patient_home_phone_number(self):
         home_phone_number = self.patient_info.get("Patient Cell Phone Number").replace("-", "")
-        return int(home_phone_number)
+        if home_phone_number:
+            return int(home_phone_number)
+        else:
+            return ""
 
     def get_patient_cell_phone_number(self):
         cell_phone_number = self.patient_info.get("Patient Cell Phone Number").replace("-", "")
-        return int(cell_phone_number)
+        if cell_phone_number:
+            return int(cell_phone_number)
+        else:
+            return ""
 
     def get_patient_email(self):
-        return self.patient_info.get("Email")
+        if self.patient_info.get("Email"):
+            return self.patient_info.get("Email")
+        else:
+            return ""
 
     def get_patient_account_type(self):
-        return self.patient_info.get("Account Type")
+        return self.patient_info.get("Acct. Type")
 
     def get_patient_status(self):
         return self.patient_info.get("Status")
@@ -104,10 +114,11 @@ class PatientInfo:
         return self.patient_info.get("Subscriber ID")
 
     def get_patient_primary_insurance_name(self):
-        return self.patient_info.get("Primary Insurance Name")
+        return self.patient_info.get("Primary Insurance")
 
     def get_patient_primary_insurance_group_number(self):
-        return self.patient_info.get("Group Number")
+        # can't add it as an number
+        return str(self.patient_info.get("Group Number"))
 
     def get_patient_primary_insurance_plan_name(self):
         return self.patient_info.get("Plan Name")
@@ -187,8 +198,17 @@ class PatientInfo:
     def get_patient_home_plan_address(self):
         global home_plan_street_address, home_plan_city, home_plan_state, home_plan_zip
         if self.patient_info.get("Home Plan Address") != "":
-            full_home_plan_address = self.patient_info.get("Home Plan Address").replace(",", "")
+            full_home_plan_address = self.patient_info.get("Home Plan Address").replace(",", " ")
+
             full_home_plan_address_list = full_home_plan_address.split(" ")
+
+            if len(full_home_plan_address_list) == 10:
+                home_plan_street_address = full_home_plan_address_list[0] + full_home_plan_address_list \
+                    [1] + full_home_plan_address_list[2] + full_home_plan_address_list[3]
+                home_plan_city = full_home_plan_address_list[5] + " " + full_home_plan_address_list[6]
+                home_plan_state = full_home_plan_address_list[8]
+                home_plan_zip = full_home_plan_address_list[9]
+
             if len(full_home_plan_address_list) == 7:
                 home_plan_street_address = full_home_plan_address_list[0] + " " + full_home_plan_address_list \
                     [1] + " " + full_home_plan_address_list[2]
@@ -201,6 +221,12 @@ class PatientInfo:
                 home_plan_city = full_home_plan_address_list[3]
                 home_plan_state = full_home_plan_address_list[4]
                 home_plan_zip = full_home_plan_address_list[5]
+
+            if len(full_home_plan_address_list) == 5:
+                home_plan_street_address = full_home_plan_address_list[0] + " " + full_home_plan_address_list[1]
+                home_plan_city = full_home_plan_address_list[2]
+                home_plan_state = full_home_plan_address_list[3]
+                home_plan_zip = full_home_plan_address_list[4]
             return {
                 "street_address": home_plan_street_address,
                 "city": home_plan_city,
@@ -229,6 +255,7 @@ class PatientInfo:
                 "address": self.get_patient_plan_admin_address(),
                 "phone_number": self.get_patient_plan_admin_phone_number()
             }
+
     # extract the plan admin address
     def get_patient_plan_admin_address(self):
         global plan_admin_street_address, plan_admin_plan_city, plan_admin_state, plan_admin_zip
